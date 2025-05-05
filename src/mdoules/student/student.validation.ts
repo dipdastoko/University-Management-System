@@ -1,62 +1,87 @@
-import Joi from "joi";
+import { z } from "zod";
 
-// UserName schema
-const userNameValidationSchema = Joi.object({
-  firstName: Joi.string()
+const userNameValidationSchema = z.object({
+  firstName: z
+    .string()
+    .max(25, "First name cannot be more than 25 characters")
+    .nonempty("First name is required")
     .trim()
-    .max(25)
-    .required()
-    .custom((value, helpers) => {
-      const capitalized = value.charAt(0).toUpperCase() + value.slice(1);
-      if (value !== capitalized) {
-        return helpers.error("First name must start with a capital letter");
-      }
-      return value;
-    }),
-  middleName: Joi.string().trim().allow(null, ""), // optional
-  lastName: Joi.string()
+    .refine(
+      (val) => val === val.charAt(0).toUpperCase() + val.slice(1),
+      (val) => ({ message: `${val} is not in capitalized format` }),
+    ),
+  middleName: z.string().trim().optional(),
+  lastName: z
+    .string()
+    .nonempty("Last name is required")
     .trim()
-    .required()
-    .regex(/^[A-Za-z]+$/)
-    .message("Last name must contain only alphabetic characters"),
+    .refine(
+      (val) => /^[A-Za-z]+$/.test(val),
+      (val) => ({ message: `${val} is not valid` }),
+    ),
 });
 
-// Guardian schema
-const guardianValidationSchema = Joi.object({
-  fatherName: Joi.string().trim().required(),
-  fatherOccupation: Joi.string().trim().required(),
-  fatherContactNo: Joi.string().trim().required(),
-  motherName: Joi.string().trim().required(),
-  motherOccupation: Joi.string().trim().required(),
-  motherContactNo: Joi.string().trim().required(),
+// Sub-schema: Guardian
+const guardianValidationSchema = z.object({
+  fatherName: z.string().nonempty("Father's name is required").trim(),
+  fatherOccupation: z
+    .string()
+    .nonempty("Father's occupation is required")
+    .trim(),
+  fatherContactNo: z
+    .string()
+    .nonempty("Father's contact number is required")
+    .trim(),
+  motherName: z.string().nonempty("Mother's name is required").trim(),
+  motherOccupation: z
+    .string()
+    .nonempty("Mother's occupation is required")
+    .trim(),
+  motherContactNo: z
+    .string()
+    .nonempty("Mother's contact number is required")
+    .trim(),
 });
 
-// Local Guardian schema
-const localGuardianValidationSchema = Joi.object({
-  name: Joi.string().trim().required(),
-  occupation: Joi.string().trim().required(),
-  contactNo: Joi.string().trim().required(),
-  address: Joi.string().trim().required(),
+// Sub-schema: Local Guardian
+const localGuardianValidationSchema = z.object({
+  name: z.string().nonempty("Local guardian's name is required").trim(),
+  occupation: z
+    .string()
+    .nonempty("Local guardian's occupation is required")
+    .trim(),
+  contactNo: z
+    .string()
+    .nonempty("Local guardian's contact number is required")
+    .trim(),
+  address: z.string().nonempty("Local guardian's address is required").trim(),
 });
 
-// Main student schema
-export const studentValidationSchema = Joi.object({
-  id: Joi.string().trim().required(),
-  name: userNameValidationSchema.required(),
-  gender: Joi.string().valid("male", "female", "other").required(),
-  dateOfBirth: Joi.string().trim().optional(),
-  email: Joi.string().trim().email().required(),
-  contactNo: Joi.string().trim().required(),
-  emergencyContactNo: Joi.string().trim().required(),
-  bloodGroup: Joi.string()
-    .valid("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
+// Main Schema: Student
+const studentValidationSchema = z.object({
+  id: z.string().nonempty("Student ID is required").trim(),
+  name: userNameValidationSchema,
+  gender: z.enum(["male", "female", "other"]),
+  dateOfBirth: z.string().trim().optional(),
+  email: z
+    .string()
+    .nonempty("Email address is required")
+    .email("Invalid email address")
+    .trim(),
+  contactNo: z.string().nonempty("Contact number is required").trim(),
+  emergencyContactNo: z
+    .string()
+    .nonempty("Emergency contact number is required")
+    .trim(),
+  bloodGroup: z
+    .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
     .optional(),
-  presentAddress: Joi.string().trim().required(),
-  permanentAddress: Joi.string().trim().required(),
-  guardian: guardianValidationSchema.required(),
-  localGuardian: localGuardianValidationSchema.required(),
-  profileImg: Joi.string().trim().optional(),
-  isActive: Joi.string().valid("active", "inactive").default("active"),
+  presentAddress: z.string().nonempty("Present address is required").trim(),
+  permanentAddress: z.string().nonempty("Permanent address is required").trim(),
+  guardian: guardianValidationSchema,
+  localGuardian: localGuardianValidationSchema,
+  profileImg: z.string().trim().optional(),
+  isActive: z.enum(["active", "inactive"]).default("active"),
 });
 
 export default studentValidationSchema;
