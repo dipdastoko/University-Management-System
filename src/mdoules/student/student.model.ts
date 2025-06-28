@@ -7,6 +7,8 @@ import {
   StudentModelType,
 } from "./student.interface";
 import validator from "validator";
+import bcrypt from "bcrypt";
+import config from "../../app/config";
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -97,6 +99,11 @@ const studentSchema = new Schema<TStudent, StudentModelType>({
     unique: true,
     trim: true,
   },
+  password: {
+    type: String,
+    required: [true, "Student password is required"],
+    maxlength: [20, "Password can not be more than 20 characters"],
+  },
   name: {
     type: userNameSchema,
     required: [true, "Student name is required"],
@@ -166,6 +173,24 @@ const studentSchema = new Schema<TStudent, StudentModelType>({
     default: "active",
     trim: true,
   },
+});
+
+//pre save middleware/hook
+studentSchema.pre("save", async function (next) {
+  // console.log(this, "pre hook: we will save the data");
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  //hashing password and save into db
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
+});
+
+//post save middleware/hook
+studentSchema.post("save", function () {
+  console.log(this, "post hook: we saved our data");
 });
 
 // creating a custom instance method
