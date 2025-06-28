@@ -1,10 +1,10 @@
-import { Model, Schema, model } from "mongoose";
+import { Schema, model } from "mongoose";
 import {
   TGuardian,
   TLocalGuardian,
   TStudent,
-  IStudentMethods,
   TUserName,
+  StudentModelType,
 } from "./student.interface";
 import validator from "validator";
 
@@ -90,7 +90,7 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
   },
 });
 
-const studentSchema = new Schema<TStudent, Model<TStudent>, IStudentMethods>({
+const studentSchema = new Schema<TStudent, StudentModelType>({
   id: {
     type: String,
     required: [true, "Student ID is required"],
@@ -168,9 +168,18 @@ const studentSchema = new Schema<TStudent, Model<TStudent>, IStudentMethods>({
   },
 });
 
-studentSchema.methods.isUserExists = async function (id: string) {
-  const existingUser = await StudentModel.findOne({ id });
-  return existingUser;
-};
+// creating a custom instance method
+// studentSchema.methods.isUserExists = async function (id: string) {
+//   const existingUser = await StudentModel.findOne({ id });
+//   return existingUser;
+// };
 
-export const StudentModel = model("Student", studentSchema);
+studentSchema.static("isUserExist", async function isUserExist(id: string) {
+  const existingUser = await Student.findOne({ id });
+  return existingUser;
+});
+
+export const Student = model<TStudent, StudentModelType>(
+  "Student",
+  studentSchema,
+);

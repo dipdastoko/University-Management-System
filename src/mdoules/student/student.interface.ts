@@ -1,3 +1,5 @@
+import { Model } from "mongoose";
+
 export type TGuardian = {
   fatherName: string;
   fatherOccupation: string;
@@ -38,6 +40,10 @@ export type TStudent = {
   isActive: "active" | "inactive";
 };
 
-export interface IStudentMethods {
-  isUserExists(id: string): Promise<TStudent | null>;
+// export interface IStudentMethods {
+//   isUserExists(id: string): Promise<TStudent | null>;
+// }
+
+export interface StudentModelType extends Model<TStudent> {
+  isUserExist(id: string): Promise<TStudent | null>;
 }
