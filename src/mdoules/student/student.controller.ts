@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { StudentServices } from "./student.service";
 import { z } from "zod";
 import studentValidationSchema from "./student.validation";
+import { date } from "joi";
 // import studentValidationSchema from "./student.validation";
 
 const createStudent = async (req: Request, res: Response) => {
@@ -48,8 +49,12 @@ const getAllStudent = async (req: Request, res: Response) => {
       message: "All Students retrieved successfully",
       data: result,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "something went wrong",
+      data: err,
+    });
   }
 };
 
@@ -67,8 +72,27 @@ const getSingleStudent = async (req: Request, res: Response) => {
   }
 };
 
+const deleteStudent = async (req: Request, res: Response) => {
+  try {
+    const { studentId } = req.params;
+    const result = await StudentServices.deleteStudentsFromDB(studentId);
+    res.status(200).json({
+      success: true,
+      message: "Student deleted sucessfully",
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || "something went wrong",
+      error: err,
+    });
+  }
+};
+
 export const StudentControllers = {
   createStudent,
   getAllStudent,
   getSingleStudent,
+  deleteStudent,
 };
