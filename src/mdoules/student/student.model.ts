@@ -9,7 +9,6 @@ import {
 import validator from "validator";
 import bcrypt from "bcrypt";
 import config from "../../app/config";
-import { boolean, func } from "joi";
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
