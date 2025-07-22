@@ -3,6 +3,7 @@ import cors from "cors";
 import { StudentRoutes } from "./mdoules/student/student.route";
 import { UserRoutes } from "./mdoules/user/user.route";
 import { globalErrorHandler } from "./app/middlewares/globalErrorHandlers";
+import notFound from "./app/middlewares/notFound";
 const app = express();
 
 //parser
@@ -20,5 +21,8 @@ const getAController = (req: Request, res: Response) => {
 app.get("/", getAController);
 
 app.use(globalErrorHandler);
+
+//Not found route
+app.use(notFound);
 
 export default app;
