@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 import { StudentRoutes } from "./mdoules/student/student.route";
+import { UserRoutes } from "./mdoules/user/user.route";
 const app = express();
 
 //parser
@@ -9,6 +10,7 @@ app.use(cors()); //Enables CORS (Cross-Origin Resource Sharing) — it allows se
 
 // application routes
 app.use("/api/v1/students", StudentRoutes);
+app.use("/api/v1/users", UserRoutes);
 
 const getAController = (req: Request, res: Response) => {
   res.send("Hello World!");
