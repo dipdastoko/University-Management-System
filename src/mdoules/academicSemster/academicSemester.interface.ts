@@ -23,4 +23,8 @@ export type TAcademicSemster = {
   endMonth: TMonths;
 };
 
+export type TAcademicSemsterNameCodeMapper = {
+  [key: string]: string;
+};
+
 export default TAcademicSemster;
