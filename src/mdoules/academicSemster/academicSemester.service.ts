@@ -7,6 +7,16 @@ const getAllAcademicSemstersFromDB = async () => {
   return result;
 };
 
+const getSingleSemesterFromDB = async (id: string) => {
+  const result = await AcademicSemester.findById(id);
+  return result;
+};
+
+const updateSemesterIntoDB = async (id: string, payLoad: TAcademicSemster) => {
+  const result = await AcademicSemester.updateOne({ _id: id }, payLoad);
+  return result;
+};
+
 const createAcademicSemesterIntoDB = async (payLoad: TAcademicSemster) => {
   // semester name --> semester code
 
@@ -22,5 +32,7 @@ const createAcademicSemesterIntoDB = async (payLoad: TAcademicSemster) => {
 
 export const AcademicSemesterServices = {
   getAllAcademicSemstersFromDB,
+  getSingleSemesterFromDB,
+  updateSemesterIntoDB,
   createAcademicSemesterIntoDB,
 };
