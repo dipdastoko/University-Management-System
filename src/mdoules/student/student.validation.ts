@@ -64,7 +64,7 @@ const createStudentValidationSchema = z.object({
     student: z.object({
       name: userNameValidationSchema,
       gender: z.enum(["male", "female", "other"]),
-      dateOfBirth: z.string().trim().optional(),
+      dateOfBirth: z.date().optional(),
       email: z
         .string()
         .nonempty("Email address is required")
