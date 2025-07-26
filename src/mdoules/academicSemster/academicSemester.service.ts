@@ -2,6 +2,11 @@ import TAcademicSemster from "./academicSemester.interface";
 import { AcademicSemester } from "./academicSemester.model";
 import { AcademicSemesterConsts } from "./academicSemster.consts";
 
+const getAllAcademicSemstersFromDB = async () => {
+  const result = await AcademicSemester.find();
+  return result;
+};
+
 const createAcademicSemesterIntoDB = async (payLoad: TAcademicSemster) => {
   // semester name --> semester code
 
@@ -16,5 +21,6 @@ const createAcademicSemesterIntoDB = async (payLoad: TAcademicSemster) => {
 };
 
 export const AcademicSemesterServices = {
+  getAllAcademicSemstersFromDB,
   createAcademicSemesterIntoDB,
 };
