@@ -31,9 +31,9 @@ const getSingleSemester = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateSemster = catchAsync(async (req: Request, res: Response) => {
-  const id = req.params.id;
+  const semesterId = req.params.semesterId;
   const result = await AcademicSemesterServices.updateSemesterIntoDB(
-    id,
+    semesterId,
     req.body,
   );
   sendResponse(res, {

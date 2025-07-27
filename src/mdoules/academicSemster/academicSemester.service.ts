@@ -13,6 +13,14 @@ const getSingleSemesterFromDB = async (id: string) => {
 };
 
 const updateSemesterIntoDB = async (id: string, payLoad: TAcademicSemster) => {
+  if (
+    payLoad.name &&
+    payLoad.code &&
+    AcademicSemesterConsts.academicSemesterNameCodeMapper[payLoad.name] !==
+      payLoad.code
+  ) {
+    throw new Error("Invalid Semester Code");
+  }
   const result = await AcademicSemester.updateOne({ _id: id }, payLoad);
   return result;
 };
