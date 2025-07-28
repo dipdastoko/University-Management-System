@@ -23,7 +23,7 @@ const createStudentIntoDB = async (password: string, payLoad: TStudent) => {
 
   //set manually generated id
   if (admissionSemester != null) {
-    userData.id = generateStudentId(admissionSemester);
+    userData.id = await generateStudentId(admissionSemester);
   } else {
     throw new Error("Semester Not Found");
   }
