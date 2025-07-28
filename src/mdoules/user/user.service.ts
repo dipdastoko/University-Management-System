@@ -1,11 +1,12 @@
 import config from "../../app/config";
-import TAcademicSemster from "../academicSemster/academicSemester.interface";
+import { AcademicSemester } from "../academicSemster/academicSemester.model";
 import { TStudent } from "../student/student.interface";
 import { Student } from "../student/student.model";
 import { TUser } from "./user.interface";
 import { User } from "./user.model";
+import { generateStudentId } from "./user.utils";
 
-const createStudentIntoDB = async (password: string, studentData: TStudent) => {
+const createStudentIntoDB = async (password: string, payLoad: TStudent) => {
   // create a user object
   const userData: Partial<TUser> = {};
 
@@ -15,10 +16,17 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   //set student role
   userData.role = "student";
 
-  const generateStudentId = (payLoad: TAcademicSemster) => {};
+  //find academic semester info
+  const admissionSemester = await AcademicSemester.findById(
+    payLoad.admissionSemester,
+  );
 
   //set manually generated id
-  userData.id = "203000001";
+  if (admissionSemester != null) {
+    userData.id = generateStudentId(admissionSemester);
+  } else {
+    throw new Error("Semester Not Found");
+  }
 
   //create a user
   const newUser = await User.create(userData); //built-in static method
@@ -26,10 +34,10 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   //create a student
   if (Object.keys(newUser).length) {
     //set id, _id as user
-    studentData.id = newUser.id;
-    studentData.user = newUser._id;
+    payLoad.id = newUser.id;
+    payLoad.user = newUser._id;
 
-    const newStudent = await Student.create(studentData);
+    const newStudent = await Student.create(payLoad);
     return newStudent;
   }
 };
