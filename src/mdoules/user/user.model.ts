@@ -2,6 +2,7 @@ import { model, Schema } from "mongoose";
 import { TUser } from "./user.interface";
 import config from "../../app/config";
 import bcrypt from "bcrypt";
+import { Student } from "../student/student.model";
 
 const userSchema = new Schema<TUser>(
   {
@@ -39,7 +40,12 @@ const userSchema = new Schema<TUser>(
 
 //pre save middleware/hook
 userSchema.pre("save", async function (next) {
-  // console.log(this, "pre hook: we will save the data");
+  const isStudentExists = await Student.findOne({
+    id: this.id,
+  });
+  if (isStudentExists) {
+    throw new Error("Student Already Exists!");
+  }
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
   //hashing password and save into db
